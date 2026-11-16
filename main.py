@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 from urllib.parse import urlparse
 
+
 KNOWN = {"user-agent", "allow", "disallow", "sitemap", "crawl-delay", "host"}
 
 
@@ -13,6 +14,7 @@ def lint(text):
     issues = []
     has_agent = False
     current_agents = []
+    group_has_rules = False
     for number, raw in enumerate(text.splitlines(), 1):
         line = raw.split("#", 1)[0].strip()
         if not line:
@@ -30,7 +32,11 @@ def lint(text):
                 issues.append((number, "error", "user-agent value is empty"))
                 has_agent = False
                 current_agents = []
+                group_has_rules = False
             else:
+                if group_has_rules:
+                    current_agents = []
+                    group_has_rules = False
                 has_agent = True
                 current_agents.append(value.lower())
             continue
@@ -42,6 +48,8 @@ def lint(text):
         if not has_agent:
             issues.append((number, "error", f"{key} appears before a user-agent group"))
             continue
+        if key in {"allow", "disallow", "crawl-delay", "host"}:
+            group_has_rules = True
         if key == "crawl-delay":
             try:
                 if float(value) < 0:

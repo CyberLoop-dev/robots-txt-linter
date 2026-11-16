@@ -14,6 +14,11 @@ class RobotsTests(unittest.TestCase):
     def test_accepts_sitemap(self):
         self.assertEqual(lint("User-agent: *\nAllow: /\nSitemap: https://example.com/sitemap.xml"), [])
 
+    def test_starts_a_new_group_after_rules(self):
+        issues = lint("User-agent: *\nDisallow: /\nUser-agent: Googlebot\nDisallow: /private\n")
+        warnings = [message for _, severity, message in issues if severity == "warning"]
+        self.assertEqual(len(warnings), 1)
+
 
 if __name__ == "__main__":
     unittest.main()
