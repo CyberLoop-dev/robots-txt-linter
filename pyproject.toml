@@ -1,0 +1,6 @@
+[project]
+name = "robots-txt-linter"
+version = "0.1.0"
+description = "Lint robots.txt files for malformed directives, rules outside user-agent groups, invalid sitemap URLs, and accidental site-wide blocking."
+requires-python = ">=3.10"
+license = "MIT"
